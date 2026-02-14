@@ -20,7 +20,7 @@ See: [debezium-connector-mysql](https://debezium.io/docs/connectors/mysql/)
 It will: 
 
 1. Source records from our MySQL `tokenise.JNL_ACQ` table using Kafka Connect Debezium MySQL Source Connector
-2. filter out records that have both the cardNumber and discountDesc pupulated
+2. filter out records that have both the cardNumber and tkcardNumber pupulated
    1. By doing this filter here we reduce the number of records published onto our Kafka Topic and the associated workload/data retention/costs.
 3. Assign a user specified value for the message key
 4. Publish output onto specified topic: `jnl_acq`

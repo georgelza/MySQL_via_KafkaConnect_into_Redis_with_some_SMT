@@ -73,7 +73,7 @@ KAFKA_KEY_FILTER=AZ1 ./jnl_acq_redis_sink.sh
 
 1. **filterKey** - Keep only Kafka key = "AZ1"
 2. **addTimestamp** - Add `createdAt` field (ISO8601)
-3. **selectFields** - Keep `acqJnlSeqNumber`, `discountDesc`, `cardNumber`, `createdAt`
+3. **selectFields** - Keep `acqJnlSeqNumber`, `tkcardNumber`, `cardNumber`, `createdAt`
 4. **extractRedisKey** - Use `cardNumber` as message key
 5. **flattenKey** - Extract plain string from key
 6. **removeCardNumber** - Remove `cardNumber` from value (it's the key!)
@@ -87,7 +87,7 @@ KAFKA_KEY_FILTER=AZ1 ./jnl_acq_redis_sink.sh
 ```json
 {
   "acqJnlSeqNumber": 12345,
-  "discountDesc": "Special offer",
+  "tkcardNumber": "Special offer",
   "createdAt": "2026-02-14T10:30:45.123Z"
 }
 ```
@@ -99,7 +99,7 @@ KAFKA_KEY_FILTER=AZ1 ./jnl_acq_redis_sink.sh
 ```bash
 # Insert test data
 docker exec mysql mysql -u root -pdbpassword tokenise -e \
-  "INSERT INTO JNL_ACQ (acquirerId, cardNumber, discountDesc, operationType, transLocalDate, transLocalTime, bankId) \
+  "INSERT INTO JNL_ACQ (acquirerId, cardNumber, tkcardNumber, operationType, transLocalDate, transLocalTime, bankId) \
   VALUES ('TEST', '9999888877776666', 'Test with timestamp', 'PUR', '0214', '120000', 'BANK01');"
 
 # Wait for processing
@@ -111,7 +111,7 @@ docker exec redis redis-cli -n 0 GET '9999888877776666'
 
 **Expected output:**
 ```json
-{"acqJnlSeqNumber":12345,"discountDesc":"Test with timestamp","createdAt":"2026-02-14T10:30:45.123Z"}
+{"acqJnlSeqNumber":12345,"tkcardNumber":"Test with timestamp","createdAt":"2026-02-14T10:30:45.123Z"}
 ```
 
 ## Timestamp Formats
@@ -152,7 +152,7 @@ docker exec redis redis-cli -n 0 GET '9999888877776666'
 ```bash
 # Insert record
 docker exec mysql mysql -u root -pdbpassword tokenise -e \
-  "INSERT INTO JNL_ACQ (acquirerId, cardNumber, discountDesc, operationType, transLocalDate, transLocalTime, bankId) \
+  "INSERT INTO JNL_ACQ (acquirerId, cardNumber, tkcardNumber, operationType, transLocalDate, transLocalTime, bankId) \
   VALUES ('TIME_TEST', '1111222233334444', 'Timestamp test', 'PUR', '0214', '120000', 'BANK01');"
 
 # Get current time
@@ -182,4 +182,4 @@ The timestamps should match within a few seconds!
 
 **Redis structure:**
 - Key: cardNumber
-- Value: {acqJnlSeqNumber, discountDesc, createdAt}
+- Value: {acqJnlSeqNumber, tkcardNumber, createdAt}

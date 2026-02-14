@@ -6,7 +6,7 @@ This is our MySQL Source side, consuming records from our MySQL Datastores / JNL
 
 This custom SMT does TWO things:
 
-- **Filters messages**: Only publishes messages where `cardNumber` AND `discountDesc` are populated (non-null and non-empty)
+- **Filters messages**: Only publishes messages where `cardNumber` AND `tkcardNumber` are populated (non-null and non-empty)
 
 - **Clean key**: Extracts just `"AZ1"` as a plain string key
 
@@ -158,7 +158,7 @@ Once deployed, update your connector configuration in below file and execute cre
     "transforms.extractKey.fields": "key",
     "transforms.filterAndKey.type": "com.token.kafka.connect.transforms.FilterAndExtractKey",
     "transforms.filterAndKey.key.field": "key",
-    "transforms.filterAndKey.filter.fields": "cardNumber,discountDesc",
+    "transforms.filterAndKey.filter.fields": "cardNumber,tkcardNumber",
     "transforms.filterAndKey.filter.mode": "all",
     "transforms.removeKeyField.type": "org.apache.kafka.connect.transforms.ReplaceField\$Value",
     "transforms.removeKeyField.exclude": "key"
@@ -200,7 +200,7 @@ CONSTANT_KEY=AZ1 ./jnl_acq_mysql_source-SMT.sh
 | Property | Default | Description |
 |----------|---------|-------------|
 | `key.field` | `"key"` | Field name in key struct to extract |
-| `filter.fields` | `null` | Comma-separated field names to check (e.g., `"cardNumber,discountDesc"`) |
+| `filter.fields` | `null` | Comma-separated field names to check (e.g., `"cardNumber,tkcardNumber"`) |
 | `filter.mode` | `"all"` | `"all"` (all fields must be populated) or `"any"` (at least one) |
 
 ### Filtering Logic
@@ -208,7 +208,7 @@ CONSTANT_KEY=AZ1 ./jnl_acq_mysql_source-SMT.sh
 The SMT checks the VALUE for these fields:
 - `cardNumber` - Must be non-null and non-empty
 
-- `discountDesc` - Must be non-null and non-empty
+- `tkcardNumber` - Must be non-null and non-empty
 
 **Mode: "all"** (default):
 
@@ -225,15 +225,15 @@ The SMT checks the VALUE for these fields:
 
 ## Testing
 
-### Insert a record WITH cardNumber and discountDesc (WILL be published)
+### Insert a record WITH cardNumber and tkcardNumber (WILL be published)
 
 ```bash
 docker exec mysql mysql -u root -pdbpassword tokenise -e \
-  "INSERT INTO JNL_ACQ (acquirerId, cardNumber, discountDesc, operationType, transLocalDate, transLocalTime, bankId) \
+  "INSERT INTO JNL_ACQ (acquirerId, cardNumber, tkcardNumber, operationType, transLocalDate, transLocalTime, bankId) \
   VALUES ('TEST001', '4111111111111111', 'Some discount', 'PUR', '0213', '120000', 'BANK01');"
 ```
 
-### Insert a record WITHOUT discountDesc (WILL be filtered out)
+### Insert a record WITHOUT tkcardNumber (WILL be filtered out)
 
 ```bash
 docker exec mysql mysql -u root -pdbpassword tokenise -e \

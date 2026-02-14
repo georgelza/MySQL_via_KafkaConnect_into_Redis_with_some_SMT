@@ -9,7 +9,7 @@
 #   Key:   cardNumber value (e.g., "4111111111111111")
 #   Value: JSON string {
 #           "acqJnlSeqNumber":12345, 
-#           "discountDesc": "Special offer", 
+#           "tkcardNumber": "Special offer", 
 #           "createdAt": "2026-02-14T10:30:45.123Z
 #       }
 #
@@ -38,7 +38,7 @@ REDIS_PASSWORD="${REDIS_PASSWORD:-}"
 # Field Selection
 REDIS_KEY_FIELD="${REDIS_KEY_FIELD:-cardNumber}"
 # Comma-separated list of fields to include in Redis value
-REDIS_VALUE_FIELDS="${REDIS_VALUE_FIELDS:-acqJnlSeqNumber,discountDesc}"
+REDIS_VALUE_FIELDS="${REDIS_VALUE_FIELDS:-acqJnlSeqNumber,tkcardNumber}"
 
 echo "=================================================="
 echo "REDIS SINK CONNECTOR - ${KAFKA_KEY_FILTER}"
@@ -138,7 +138,7 @@ for i in {1..6}; do
         echo ""
         echo "Example Redis entry:"
         echo "  redis> GET \"4111111111111111\""
-        echo "  {\"acqJnlSeqNumber\":12345,\"discountDesc\":\"10% off\",\"createdAt\":\"2026-02-14T10:30:45.123Z\"}"
+        echo "  {\"acqJnlSeqNumber\":12345,\"tkcardNumber\":\"10% off\",\"createdAt\":\"2026-02-14T10:30:45.123Z\"}"
         echo ""
         echo "Verify in Redis:"
         echo "  # List all keys"
@@ -152,7 +152,7 @@ for i in {1..6}; do
         echo ""
         echo "Test by inserting into MySQL:"
         echo "  docker exec mysql mysql -u root -pdbpassword tokenise -e \\"
-        echo "    \"INSERT INTO JNL_ACQ (acquirerId, cardNumber, discountDesc, operationType, transLocalDate, transLocalTime, bankId) \\"
+        echo "    \"INSERT INTO JNL_ACQ (acquirerId, cardNumber, tkcardNumber, operationType, transLocalDate, transLocalTime, bankId) \\"
         echo "    VALUES ('TEST', '9999888877776666', 'Test discount', 'PUR', '0214', '$(date +%H%M%S)', 'BANK01');\""
         echo ""
         echo "Then check Redis:"

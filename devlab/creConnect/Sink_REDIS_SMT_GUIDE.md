@@ -7,7 +7,7 @@ This is our REDIS Sink side, consuming records from our Kafka Topic `jnl_acq` an
 
 - **Filtering**: Only processes messages with specified Kafka key (e.g., `AZ1` or `AZ2`)
 
-- **Selective fields**: Only stores `acqJnlSeqNumber` and `discountDesc`
+- **Selective fields**: Only stores `acqJnlSeqNumber` and `tkcardNumber`
 
 - **Redis structure**: 
 
@@ -99,7 +99,7 @@ JSON string with selected fields:
 ```json
 {
   "acqJnlSeqNumber": 12345,
-  "discountDesc":   "10% discount"
+  "tkcardNumber":   "10% discount"
 }
 ```
 
@@ -114,7 +114,7 @@ JSON string with selected fields:
 | `REDIS_DATABASE` | `0` | Redis database number (0-15) |
 | `REDIS_PASSWORD` | (empty) | Redis password if authentication enabled |
 | `REDIS_KEY_FIELD` | `cardNumber` | Field to use as Redis key |
-| `REDIS_VALUE_FIELDS` | `acqJnlSeqNumber,discountDesc` | Comma-separated fields for Redis value |
+| `REDIS_VALUE_FIELDS` | `acqJnlSeqNumber,tkcardNumber` | Comma-separated fields for Redis value |
 
 ## Testing
 
@@ -123,15 +123,15 @@ JSON string with selected fields:
 **Test data for AZ1:**
 ```bash
 docker exec mysql mysql -u root -pdbpassword tokenise -e \
-  "INSERT INTO JNL_ACQ (acquirerId, cardNumber, discountDesc, operationType, transLocalDate, transLocalTime, bankId) \
-  VALUES ('TEST_AZ1', '4111111111111111', 'AZ1 discount', 'PUR', '0214', '120000', 'BANK01');"
+  "INSERT INTO JNL_ACQ (acquirerId, cardNumber, tkcardNumber, operationType, transLocalDate, transLocalTime, bankId) \
+  VALUES ('TEST_AZ1', '4111111111111111', '4222222222222222, 'PUR', '0214', '120000', 'BANK01');"
 ```
 
 **Test data for AZ2:**
 ```bash
 docker exec mysql mysql -u root -pdbpassword tokenise -e \
-  "INSERT INTO JNL_ACQ (acquirerId, cardNumber, discountDesc, operationType, transLocalDate, transLocalTime, bankId) \
-  VALUES ('TEST_AZ2', '5555555555555555', 'AZ2 discount', 'PUR', '0214', '120000', 'BANK02');"
+  "INSERT INTO JNL_ACQ (acquirerId, cardNumber, tkcardNumber, operationType, transLocalDate, transLocalTime, bankId) \
+  VALUES ('TEST_AZ2', '5555555555555555', '5222222222222222', 'PUR', '0214', '120000', 'BANK02');"
 ```
 
 ### 2. Verify in Redis
@@ -144,7 +144,7 @@ docker exec redis redis-cli -n 0 GET '4111111111111111'
 
 Expected:
 ```
-{"acqJnlSeqNumber":12345,"discountDesc":"AZ1 discount"}
+{"acqJnlSeqNumber":12345,"tkcardNumber":"AZ1 discount"}
 ```
 
 **Check DB 1 (AZ2 data):**
@@ -155,7 +155,7 @@ docker exec redis redis-cli -n 1 GET '5555555555555555'
 
 Expected:
 ```
-{"acqJnlSeqNumber":12346,"discountDesc":"AZ2 discount"}
+{"acqJnlSeqNumber":12346,"tkcardNumber":"AZ2 discount"}
 ```
 
 ### 3. Monitor Data Flow
@@ -194,7 +194,7 @@ The connector uses this transform chain:
 2. **selectFields**: 
    - Type: `ReplaceField$Value`
    - Action: Keeps only specified fields (plus cardNumber for next step)
-   - Config: `include = "acqJnlSeqNumber,discountDesc,cardNumber"`
+   - Config: `include = "acqJnlSeqNumber,tkcardNumber,cardNumber"`
 
 3. **extractRedisKey**: 
    - Type: `ValueToKey`
@@ -259,10 +259,10 @@ FLUSHDB
 
 To store different fields for AZ1 vs AZ2:
 
-**AZ1 Connector** (stores acqJnlSeqNumber, discountDesc):
+**AZ1 Connector** (stores acqJnlSeqNumber, tkcardNumber):
 ```bash
 KAFKA_KEY_FILTER=AZ1 \
-REDIS_VALUE_FIELDS="acqJnlSeqNumber,discountDesc" \
+REDIS_VALUE_FIELDS="acqJnlSeqNumber,tkcardNumber" \
 ./create-redis-sink-with-filter.sh
 ```
 

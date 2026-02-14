@@ -2,7 +2,7 @@
 
 # CUSTOM SMT Based Kafka MySQL Source Connector
 #
-# - Filters: Only publishes if cardNumber AND discountDesc are populated
+# - Filters: Only publishes if cardNumber AND tkcardNumber are populated
 # - Key:     Plain string "AZ1" (not JSON, not Struct)
 #
 # The idea is 2 of these can be deployed, one per MySQL source, each inbound stream labelled by either AZ1 or AZ2 as original source.
@@ -30,7 +30,7 @@ MYSQL_HOST_NAME="${MYSQL_HOST_NAME:-mysql}"
 SCHEMA_HISTORY_TOPIC="${SCHEMA_HISTORY_TOPIC:-schema-history-jnl-acq}"
 
 # Filter Configuration
-FILTER_FIELDS="${FILTER_FIELDS:-cardNumber,discountDesc}"
+FILTER_FIELDS="${FILTER_FIELDS:-cardNumber,tkcardNumber}"
 FILTER_MODE="${FILTER_MODE:-all}"
 
 echo "=================================================="
@@ -130,10 +130,10 @@ for i in {1..6}; do
         echo ""
         echo "Test 1: Insert WITH both fields (WILL be published):"
         echo "  docker exec mysql mysql -u root -pdbpassword tokenise -e \\"
-        echo "    \"INSERT INTO JNL_ACQ (acquirerId, cardNumber, discountDesc, operationType, transLocalDate, transLocalTime, bankId) \\"
+        echo "    \"INSERT INTO JNL_ACQ (acquirerId, cardNumber, tkcardNumber, operationType, transLocalDate, transLocalTime, bankId) \\"
         echo "    VALUES ('TEST001', '4111111111111111', 'Discount applied', 'PUR', '0214', '$(date +%H%M%S)', 'BANK01');\""
         echo ""
-        echo "Test 2: Insert WITHOUT discountDesc (WILL be filtered out):"
+        echo "Test 2: Insert WITHOUT tkcardNumber (WILL be filtered out):"
         echo "  docker exec mysql mysql -u root -pdbpassword tokenise -e \\"
         echo "    \"INSERT INTO JNL_ACQ (acquirerId, cardNumber, operationType, transLocalDate, transLocalTime, bankId) \\"
         echo "    VALUES ('TEST002', '4111111111111111', 'PUR', '0214', '$(date +%H%M%S)', 'BANK01');\""

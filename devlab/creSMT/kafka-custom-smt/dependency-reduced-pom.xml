@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.token</groupId>
   <artifactId>kafka-connect-token-smt</artifactId>
-  <name>Kafka Connect Token SMT</name>
+  <name>Kafka Connect Filter and Extract Key SMT</name>
   <version>1.0.0</version>
   <build>
     <plugins>

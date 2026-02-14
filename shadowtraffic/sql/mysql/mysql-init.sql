@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS tokenise.`JNL_ACQ` (
   `businessDate`                char(8) DEFAULT NULL,
   `captureDate`                 char(4) DEFAULT NULL,
   `cardNumber`                  char(19) NOT NULL DEFAULT '',
-  `discountDesc`                varchar(20) DEFAULT NULL,
+  `tkcardNumber`                char(19) NOT NULL DEFAULT '',
   `cardTypeId`                  varchar(6) DEFAULT NULL,
   `currencyCode`                decimal(3,0) DEFAULT NULL,
   `discountAmt`                 decimal(12,0) DEFAULT NULL,

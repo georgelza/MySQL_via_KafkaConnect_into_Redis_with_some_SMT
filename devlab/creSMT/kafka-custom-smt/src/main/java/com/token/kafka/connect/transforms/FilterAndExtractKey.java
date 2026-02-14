@@ -24,7 +24,7 @@
 *       Configuration:
 *  
 *           - key.field:     Field name to extract from key struct (default: "key")
-*           - filter.fields: Comma-separated list of VALUE fields that must be populated (e.g., "cardNumber,discountDesc")
+*           - filter.fields: Comma-separated list of VALUE fields that must be populated (e.g., "cardNumber,tkcardNumber")
 *           - filter.mode:   "all" (all fields must be present) or "any" (at least one field must be present) - default: "all"
 * 
 *       Usage in connector config:
@@ -32,7 +32,7 @@
 *           "transforms": "filterAndKey",
 *           "transforms.filterAndKey.type": "com.token.kafka.connect.transforms.FilterAndExtractKey",
 *           "transforms.filterAndKey.key.field": "key",
-*           "transforms.filterAndKey.filter.fields": "cardNumber,discountDesc",
+*           "transforms.filterAndKey.filter.fields": "cardNumber,tkcardNumber",
 *           "transforms.filterAndKey.filter.mode": "all"
 * 
 *///////////////////////////////////////////////////////////////////////////////////////////////////////
