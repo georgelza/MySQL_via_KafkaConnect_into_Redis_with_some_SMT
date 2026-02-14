@@ -1,3 +1,34 @@
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////
+*
+*       Project         :   Kafka Connect Source/Sink Connector SMT Function
+*
+*       File            :   AddTimestamp.java
+*
+*       Description     :   Kafka Connect Source/Sink Connector SMT Function
+*
+*       Created     	:   Feb 2025
+*
+*       copyright       :   Copyright 2026, - G Leonard, georgelza@gmail.com
+*
+*       GIT Repo        :   https://github.com/georgelza/MySQL_via_KafkaConnect_into_Redis_with_some_SMT.git
+*
+*       Blog            :
+*
+*       Custom SMT to add createdAt timestamp to the value.
+* 
+*       Configuration:
+*           - timestamp.field: Name of the field to add (default: "createdAt")
+*           - timestamp.format: Format of timestamp - "epoch" (milliseconds) or "iso8601" (default: "iso8601")
+*           - timestamp.timezone: Timezone for ISO8601 format (default: "UTC")
+* 
+*       Usage:
+*           "transforms": "addTimestamp",
+*           "transforms.addTimestamp.type": "com.token.kafka.connect.transforms.AddTimestamp",
+*           "transforms.addTimestamp.timestamp.field": "createdAt",
+*           "transforms.addTimestamp.timestamp.format": "iso8601"
+*
+*///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 package com.token.kafka.connect.transforms;
 
 import org.apache.kafka.common.config.ConfigDef;
@@ -14,20 +45,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-/**
- * Custom SMT to add createdAt timestamp to the value.
- * 
- * Configuration:
- * - timestamp.field: Name of the field to add (default: "createdAt")
- * - timestamp.format: Format of timestamp - "epoch" (milliseconds) or "iso8601" (default: "iso8601")
- * - timestamp.timezone: Timezone for ISO8601 format (default: "UTC")
- * 
- * Usage:
- * "transforms": "addTimestamp",
- * "transforms.addTimestamp.type": "com.token.kafka.connect.transforms.AddTimestamp",
- * "transforms.addTimestamp.timestamp.field": "createdAt",
- * "transforms.addTimestamp.timestamp.format": "iso8601"
- */
 public class AddTimestamp<R extends ConnectRecord<R>> implements Transformation<R> {
     
     private static final String TIMESTAMP_FIELD_CONFIG = "timestamp.field";

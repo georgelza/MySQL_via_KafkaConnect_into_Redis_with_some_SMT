@@ -1,3 +1,42 @@
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////
+*
+*       Project         :   Kafka Connect Source/Sink Connector SMT Function
+*
+*       File            :   FilterAndExtractKey.java
+*
+*       Description     :   Kafka Connect Source/Sink Connector SMT Function
+*
+*       Created     	:   Feb 2025
+*
+*       copyright       :   Copyright 2026, - G Leonard, georgelza@gmail.com
+*
+*       GIT Repo        :   https://github.com/georgelza/MySQL_via_KafkaConnect_into_Redis_with_some_SMT.git
+*
+*       Blog            :
+*
+*       Custom SMT that:
+* 
+*       Source Engine:
+* 
+*       1. Filters records - only passes through if specified fields are non-null/non-empty
+*       2. Extracts plain string key from struct key
+* 
+*       Configuration:
+*  
+*           - key.field:     Field name to extract from key struct (default: "key")
+*           - filter.fields: Comma-separated list of VALUE fields that must be populated (e.g., "cardNumber,discountDesc")
+*           - filter.mode:   "all" (all fields must be present) or "any" (at least one field must be present) - default: "all"
+* 
+*       Usage in connector config:
+* 
+*           "transforms": "filterAndKey",
+*           "transforms.filterAndKey.type": "com.token.kafka.connect.transforms.FilterAndExtractKey",
+*           "transforms.filterAndKey.key.field": "key",
+*           "transforms.filterAndKey.filter.fields": "cardNumber,discountDesc",
+*           "transforms.filterAndKey.filter.mode": "all"
+* 
+*///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 package com.token.kafka.connect.transforms;
 
 import org.apache.kafka.common.config.ConfigDef;
@@ -11,28 +50,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Custom SMT that:
- * Source Engine:
- * 
- * 1. Filters records - only passes through if specified fields are non-null/non-empty
- * 2. Extracts plain string key from struct key
- * 
- * Configuration:
- * 
- * - key.field:     Field name to extract from key struct (default: "key")
- * - filter.fields: Comma-separated list of VALUE fields that must be populated (e.g., "cardNumber,discountDesc")
- * - filter.mode:   "all" (all fields must be present) or "any" (at least one field must be present) - default: "all"
- * 
- * Usage in connector config:
- * 
- * "transforms": "filterAndKey",
- * "transforms.filterAndKey.type": "com.token.kafka.connect.transforms.FilterAndExtractKey",
- * "transforms.filterAndKey.key.field": "key",
- * "transforms.filterAndKey.filter.fields": "cardNumber,discountDesc",
- * "transforms.filterAndKey.filter.mode": "all"
- * 
- */
 public class FilterAndExtractKey<R extends ConnectRecord<R>> implements Transformation<R> {
     
     private static final String KEY_FIELD_CONFIG     = "key.field";

@@ -1,3 +1,44 @@
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////
+*
+*       Project         :   Kafka Connect Source/Sink Connector SMT Function
+*
+*       File            :   FilterByKafkaKey.java
+*
+*       Description     :   Kafka Connect Source/Sink Connector SMT Function
+*
+*       Created     	:   Feb 2025
+*
+*       copyright       :   Copyright 2026, - G Leonard, georgelza@gmail.com
+*
+*       GIT Repo        :   https://github.com/georgelza/MySQL_via_KafkaConnect_into_Redis_with_some_SMT.git
+*
+*       Blog            :
+*
+*       Custom SMT that:
+* 
+*       Sink Engine:
+* 
+*       Custom SMT to filter records by Kafka message key.
+*       Only passes through records where the key matches the specified value.
+* 
+*       Configuration:
+* 
+*       - key.value: The key value to match (e.g., "AZ1", "AZ2")
+* 
+*       Usage:
+* 
+*           "predicates":                            "filterByKafkaKey",
+*           "predicates.filterByKafkaKey.type":      "com.token.kafka.connect.transforms.FilterByKafkaKey",
+*           "predicates.filterByKafkaKey.key.value": "AZ1"
+* 
+*       Or as a transform that returns null for filtered records:
+* 
+*           "transforms": "filterKey",
+*           "transforms.filterKey.type": "com.token.kafka.connect.transforms.FilterByKafkaKey",
+*           "transforms.filterKey.key.value": "AZ1"
+* 
+*///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 package com.token.kafka.connect.transforms;
 
 import org.apache.kafka.common.config.ConfigDef;
@@ -7,30 +48,6 @@ import org.apache.kafka.connect.transforms.util.SimpleConfig;
 
 import java.util.Map;
 
-/**
- * Custom SMT that:
- * Sink Engine:
- * 
- * Custom SMT to filter records by Kafka message key.
- * Only passes through records where the key matches the specified value.
- * 
- * Configuration:
- * 
- * - key.value: The key value to match (e.g., "AZ1", "AZ2")
- * 
- * Usage:
- * 
- * "predicates":                            "filterByKafkaKey",
- * "predicates.filterByKafkaKey.type":      "com.token.kafka.connect.transforms.FilterByKafkaKey",
- * "predicates.filterByKafkaKey.key.value": "AZ1"
- * 
- * Or as a transform that returns null for filtered records:
- * 
- * "transforms": "filterKey",
- * "transforms.filterKey.type": "com.token.kafka.connect.transforms.FilterByKafkaKey",
- * "transforms.filterKey.key.value": "AZ1"
- * 
- */
 public class FilterByKafkaKey<R extends ConnectRecord<R>> implements Transformation<R> {
     
     private static final String KEY_VALUE_CONFIG = "key.value";

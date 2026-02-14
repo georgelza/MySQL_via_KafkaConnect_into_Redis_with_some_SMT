@@ -1,3 +1,30 @@
+/* //////////////////////////////////////////////////////////////////////////////////////////////////////
+*
+*       Project         :   Kafka Connect Source/Sink Connector SMT Function
+*
+*       File            :   ValueToJsonString.java
+*
+*       Description     :   Kafka Connect Source/Sink Connector SMT Function
+*
+*       Created     	:   Feb 2025
+*
+*       copyright       :   Copyright 2026, - G Leonard, georgelza@gmail.com
+*
+*       GIT Repo        :   https://github.com/georgelza/MySQL_via_KafkaConnect_into_Redis_with_some_SMT.git
+*
+*       Blog            :
+*
+*       Custom SMT to convert value (Map/Struct) to JSON string for Redis sink.
+* 
+*       The Redis sink connector requires the value to be a String or Bytes.
+*       This transform converts Map objects to JSON strings.
+* 
+*       Usage:
+*           "transforms": "toJsonString",
+*           "transforms.toJsonString.type": "com.token.kafka.connect.transforms.ValueToJsonString"
+*
+*///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 package com.token.kafka.connect.transforms;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,16 +34,6 @@ import org.apache.kafka.connect.transforms.Transformation;
 
 import java.util.Map;
 
-/**
- * Custom SMT to convert value (Map/Struct) to JSON string for Redis sink.
- * 
- * The Redis sink connector requires the value to be a String or Bytes.
- * This transform converts Map objects to JSON strings.
- * 
- * Usage:
- * "transforms": "toJsonString",
- * "transforms.toJsonString.type": "com.token.kafka.connect.transforms.ValueToJsonString"
- */
 public class ValueToJsonString<R extends ConnectRecord<R>> implements Transformation<R> {
     
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();

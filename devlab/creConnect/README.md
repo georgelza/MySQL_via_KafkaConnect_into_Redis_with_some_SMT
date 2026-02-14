@@ -3,10 +3,51 @@
 
 This directory contain the various scripts to deploy our MySQL Kafka Source connectors and the REDIS kafka Sink Connector.
 
-See `Source_MySQL_SMT_GUIDE.md` for more regarding our Source Connector and deployment.
+- `jnl_acq_mysql_source-SMT.sh` as documented in `Source_MySQL_SMT_GUIDE.md` for more regarding our Source Connector and deployment.
 
-See `Sink_REDIS_SMT_GUIDE.md` for more regarding our Sink onnector and deployment.
+- `jnl_acq_redis_sink-SMT.sh` as documented in `Sink_REDIS_SMT_GUIDE.md` for more regarding our Sink onnector and deployment.
 
-Both these are dependant on the Java based Single Message Transform (SMT) packages as defined in `<Project root>/devlab/creSMT` directory.
+Both these are dependant on the Java based [**Single Message Transform (SMT)**](https://docs.confluent.io/kafka-connectors/transforms/current/overview.html) packages as defined in `<Project root>/devlab/creSMT` directory.
 
-See `<Project root>/devlab/creSMT/README.md`
+See `<Project root>/devlab/creSMT/README.md` for building our SMT function used by the `jnl_acq_mysql_source-SMT.sh` and `jnl_acq_redis_sink-SMT.sh` connector definitions/tasks.
+
+### jnl_acq_mysql_source-SMT.sh
+
+This is our primary Kafka Source Connector to ingest records from our MySQL Datastore.
+
+See: [debezium-connector-mysql](https://debezium.io/docs/connectors/mysql/)
+
+It will: 
+
+1. Source records from our MySQL `tokenise.JNL_ACQ` table using Kafka Connect Debezium MySQL Source Connector
+2. filter out records that have both the cardNumber and discountDesc pupulated
+   1. By doing this filter here we reduce the number of records published onto our Kafka Topic and the associated workload/data retention/costs.
+3. Assign a user specified value for the message key
+4. Publish output onto specified topic: `jnl_acq`
+
+### jnl_acq_redis_sink-SMT.sh
+
+This is our primary Kafka Connect Sink Connector to sink records into our REDIS Datastore.
+
+See: [jcustenborder/kafka-connect-redis](https://docs.confluent.io/kafka-connectors/redis/current/overview.html)
+
+It will:
+
+1. Source records from our `jnl_acq` topic, 
+2. Filter our records based on message key
+3. select specific columns, constructing output JSON Payload
+4. Add to payload createdAt field with system time stamp
+5. Sink into our `REDIS datastore` using the above Kafka Connect REDIS Sink Connector
+
+### jnl_acq_mysql_source-FULL.sh
+
+Similar to our First Source connector, but this example consume/ingest all records from our MySQL tokenise.JNL_ACQ table, no filtering.
+   
+See: [debezium-connector-mysql](https://debezium.io/docs/connectors/mysql/)
+
+It will:
+
+1. Source records from our MySQL tokenise.JNL_ACQ table using Kafka Connect Debezium MySQL Source Connector
+MySQL Source Connector.
+1. Assign a user specified value for the message key 
+2. All records are published onto our topic: `jnl_acq`
