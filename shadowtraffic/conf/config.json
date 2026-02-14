@@ -1,0 +1,232 @@
+{
+    "generators": [
+        {
+            "name": "jnl_acq",
+            "table": "jnl_acq",
+            "vars": {
+
+                "now":          {"_gen": "now"},
+                "country":      {"_gen": "env", "var": "COUNTRY"},
+                "low_amnt":     {"_gen": "constant", "x": {"_gen": "env", "var": "TXN_AMNT_LOW"},  "cast": "double"},
+                "high_amnt":    {"_gen": "constant", "x": {"_gen": "env", "var": "TXN_AMNT_HIGH"},  "cast": "double"},
+
+                "amtCredits": {
+                    "_gen": "uniformDistribution",
+                    "bounds": [
+                        {"_gen": "var", "var": "low_amnt"}, 
+                        {"_gen": "var", "var": "high_amnt"}
+                    ],
+                    "decimals": 2
+                },                
+                "tenants": {
+                    "_gen": "loadJsonFile",
+                    "file": "/home/tenants.json"                    
+                },
+
+                "tenantId":             {"_gen": "var", "var": "tenants", "path": ["tenantId"]},
+                "sleep":                {"_gen": "constant", "x": {"_gen": "env", "var": "SLEEP"}, "cast": "integer"},
+                "maxEvents":            {"_gen": "constant", "x": {"_gen": "env", "var": "MAX_TXN"}, "cast": "integer"},
+                "token_inject":         {"_gen": "constant", "x": {"_gen": "env", "var": "TOKEN_CARD_INJECT_WEIGHT"}, "cast": "integer"},
+
+                // CC to expire shortly, in 10 days
+                "card_lower": {
+                    "_gen": "math",
+                    "expr": "now + lower",
+                    "names": {
+                        "lower": {
+                            "_gen": "duration",
+                            "days": 10
+                        }
+                    }
+                },
+
+                // CC to expire max period, 3 yrs, 3 x 354 = 1062 - 10 days we allow above.
+                "card_upper": {
+                    "_gen": "math",
+                    "expr": "now + upper",
+                    "names": {
+                        "upper": {
+                            "_gen": "duration",
+                            "days": 1052
+                        }
+                    }
+                }            
+            },
+
+            "row": {
+
+                "accountId1":               {"_gen": "string", "expr":"#{regexify '[0-9]{8}-[0-9]{10}-[0-9]{8}'}"},
+                "accountId2":               {"_gen": "string", "expr":"#{regexify '[0-9]{8}-[0-9]{10}-[0-9]{8}'}"},
+
+                "acquirerId":               {"_gen": "var", "var":"tenantId"},
+                "acquirerCountryCode":      {"_gen": "var", "var":"country"},
+                "acquiringInstId":          {"_gen": "string", "expr":"#{regexify '[0-9]{3}-[0-9]{4}-[0-9]{2}'}"},
+                "additionalDataPrivate":    {"_gen": "string", "expr":"#{regexify '[0-9]{250}'}"},
+                "additionalRespData":       {"_gen": "string", "expr":"#{regexify '[0-9]{3}-[0-9]{6}-[0-9]{2}'}"},
+                "AECalcData":               {"_gen": "string", "expr":"#{regexify '[0-9]{6}'}"},
+                "AIP":                      {"_gen": "string", "expr":"#{regexify '[0-9]{4}'}"},
+              
+                "amtCredits": {
+                    "_gen": "var",
+                    "var": "amtCredits"
+                },
+
+                "amtDebits": {
+                    "_gen": "var",
+                    "var": "amtCredits"
+                },
+
+                "bankId":               {"_gen": "var", "var":"tenantId"},
+
+                "banknetRefNumber": {
+                    "_gen": "string", 
+                    "expr":"#{regexify '[0-9]{8}'}"
+                },
+
+                "businessDate": {
+                    "_gen": "formatDateTime",
+                    "ms": {
+                        "_gen": "now"
+                    },
+                    "format": "yyyyMMdd"
+                },
+
+                "cardNumber": {
+                    "_gen": "string", 
+                    "expr":"#{regexify '[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}'}"
+                },
+
+                // We using this "discountDesc" field to hold our "fake" tokenised CC number
+                // think of this as "tokenCardNumber"
+                // We generating 1 in a thousand atm as our subset of inbound records.
+                "discountDesc":{
+                    "_gen": "weightedOneOf",
+                    "choices": [
+                        {
+                            "weight": 1,
+                            "value": {
+                                "_gen": "string", 
+                                "expr":"#{regexify '[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}'}"
+                            }
+                        },
+                        {
+                            "weight": 100,
+                            "value": ""
+                        }
+                    ]
+                },
+
+                "cardTypeId": {
+                    "_gen": "weightedOneOf",
+                    "choices": [
+                        {"weight": 3,  "value": "Master"},
+                        {"weight": 7,  "value": "Visa"},
+                        {"weight": 2,  "value": "AmerEx"},
+                        {"weight": 1,  "value": "DnrsCl"}
+                    ]
+                },
+
+                "captureDate": { 
+                    "_gen": "formatDateTime",
+                    "ms": {
+                        "_gen": "now"
+                    },
+                    "format": "MMdd"
+                },
+
+                "currencyCode":             {"_gen": "var", "var":"country"},
+
+                "discountAmt": {
+                    "_gen": "var",
+                    "var": "amtCredits"
+                },
+
+                "endDateTime": {
+                    "_gen": "formatDateTime",
+                    "ms": {
+                        "_gen": "now"
+                    },
+                    "format": "yyyyMMdd"
+                },
+
+                "expirationDate": {
+                    "_gen": "formatDateTime",
+                    "format": "MMYY",
+                    "ms": {
+                        "_gen": "uniformDistribution",
+                        "bounds": [
+                            {"_gen": "var", "var": "card_lower"},
+                            {"_gen": "var", "var": "card_upper"}
+                        ]
+                    }
+                },
+
+                "issuerApplicationData": {"_gen": "string", "expr":"#{regexify '[0-9]{62}'}"},
+
+                "issuingIIC":           {"_gen": "string", "expr":"#{regexify '[0-9]{12}'}"},
+
+                "processingCode":       {"_gen": "string", "expr":"#{regexify '[0-9]{5}'}"},
+
+                "retrievRefNumber":     {"_gen": "string", "expr":"#{regexify '[0-9]{12}'}"},
+
+                "MTI": {
+                    "_gen": "normalDistribution",
+                    "mean": 100,
+                    "sd": 20,
+                    "decimals": 2
+                },
+
+                "memberPrivateData":    {"_gen": "string", "expr":"#{regexify '[a-z]{10}-[0-9]{512}-[0-9]{230}-[0-9]{240}'}"},
+
+                "networkData":          {"_gen": "string", "expr":"#{regexify '[0-9]{46}'}"},
+                "networkDataTraceID":   {"_gen": "string", "expr":"#{regexify '[0-9]{15}'}"},
+
+                "originTransLocalDate": {
+                    "_gen": "formatDateTime",
+                    "ms": {
+                        "_gen": "now"
+                    },
+                    "format": "MMdd"
+                },
+
+                "originTransLocalTime": {
+                    "_gen": "formatDateTime",
+                    "ms": {
+                        "_gen": "now"
+                    },                    
+                    "format": "HHMMSS"
+                },
+
+                "requestedAmt":         {"_gen": "var", "var": "amtCredits"},
+
+                "terminalId":           {"_gen": "string", "expr":"#{regexify '[0-9]{15}'}"},
+                "transDateTime":        {"_gen": "var", "var": "now"},
+
+                "transLocalDate": { 
+                    "_gen": "formatDateTime",
+                    "ms": {
+                        "_gen": "now"
+                    },
+                    "format": "MMdd"
+                },
+
+                "transLocalTime": {
+                    "_gen": "formatDateTime",
+                    "ms": {
+                        "_gen": "now"
+                    },                    
+                    "format": "HHMMSS"
+                }
+                
+            },
+            "localConfigs": {
+                "maxEvents": {"_gen": "var", "var": "maxEvents"},
+                "throttleMs": {"_gen": "var", "var": "sleep"}
+            }
+        }
+    ],
+    "connections": {
+        "_gen": "loadJsonFile",
+        "file": "/home/conn.json"         
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "mysql": {
+        "kind": "mysql",
+        "tablePolicy": "manual",
+//        "tablePolicy": "dropAndCreate",
+        "connectionConfigs": {
+            "host": "localhost",
+            "port": 3306,
+            "username": "root",
+            "password": "dbpassword",
+            "db": "tokenise"
+        }
+    }
+}

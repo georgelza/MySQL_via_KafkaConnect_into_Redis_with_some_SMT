@@ -1,0 +1,25 @@
+
+
+# watch 'docker exec shadowtraffic curl -s localhost:9400/metrics |grep events_sent'
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    hostname: mysql
+    ports:
+      - ${MYSQL_HOST_PORT:-3306}:3306
+    environment:
+      MYSQL_ROOT_USER: ${MYSQL_ROOT_USER:-root}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-dbpassword}
+      MYSQL_DATABASE: ${MYSQL_DB:-tokenise}
+      MYSQL_USER: ${MYSQL_USER:-tokenuser}
+      MYSQL_PASSWORD: ${MYSQL_USER_PASSWORD:-tokenpw}
+      TZ: "Africa/Pretoria"
+    healthcheck:
+      test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD' ]
+      timeout: 20s
+      retries: 10
+    volumes:
+      - ./data/mysql:/var/lib/mysql  
+      - ./sql/mysql:/docker-entrypoint-initdb.d
