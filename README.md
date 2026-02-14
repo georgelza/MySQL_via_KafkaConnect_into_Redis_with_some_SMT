@@ -18,7 +18,7 @@ The two Single Message Transforms (SMT's) Functions are Java based, full disclos
 <img src="diagrams/SuperLabv3.0.png" alt="Our Build" width="750" height="300">
 
 
-GIT: [MySQL_via_KafkaConnect_into_Redis_with_some_SMT]()
+GIT: [MySQL_via_KafkaConnect_into_Redis_with_some_SMT](https://github.com/georgelza/MySQL_via_KafkaConnect_into_Redis_with_some_SMT.git)
 
 ### Building Lab
 
