@@ -57,14 +57,11 @@
 
                 "accountId1":               {"_gen": "string", "expr":"#{regexify '[0-9]{8}-[0-9]{10}-[0-9]{8}'}"},
                 "accountId2":               {"_gen": "string", "expr":"#{regexify '[0-9]{8}-[0-9]{10}-[0-9]{8}'}"},
-
-                "acquirerId":               {"_gen": "var", "var":"tenantId"},
                 "acquirerCountryCode":      {"_gen": "var", "var":"country"},
+                "acquirerId":               {"_gen": "var", "var":"tenantId"},
                 "acquiringInstId":          {"_gen": "string", "expr":"#{regexify '[0-9]{3}-[0-9]{4}-[0-9]{2}'}"},
                 "additionalDataPrivate":    {"_gen": "string", "expr":"#{regexify '[0-9]{250}'}"},
                 "additionalRespData":       {"_gen": "string", "expr":"#{regexify '[0-9]{3}-[0-9]{6}-[0-9]{2}'}"},
-                "AECalcData":               {"_gen": "string", "expr":"#{regexify '[0-9]{6}'}"},
-                "AIP":                      {"_gen": "string", "expr":"#{regexify '[0-9]{4}'}"},
               
                 "amtCredits": {
                     "_gen": "var",
@@ -89,6 +86,14 @@
                         "_gen": "now"
                     },
                     "format": "yyyyMMdd"
+                },
+                
+                "captureDate": { 
+                    "_gen": "formatDateTime",
+                    "ms": {
+                        "_gen": "now"
+                    },
+                    "format": "MMdd"
                 },
 
                 "cardNumber": {
@@ -124,14 +129,6 @@
                         {"weight": 2,  "value": "AmerEx"},
                         {"weight": 1,  "value": "DnrsCl"}
                     ]
-                },
-
-                "captureDate": { 
-                    "_gen": "formatDateTime",
-                    "ms": {
-                        "_gen": "now"
-                    },
-                    "format": "MMdd"
                 },
 
                 "currencyCode":             {"_gen": "var", "var":"country"},

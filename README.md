@@ -20,6 +20,9 @@ The two Single Message Transforms (SMT's) Functions are Java based, full disclos
 
 GIT: [MySQL_via_KafkaConnect_into_Redis_with_some_SMT](https://github.com/georgelza/MySQL_via_KafkaConnect_into_Redis_with_some_SMT.git)
 
+BLOG: [MySQL_via_KafkaConnect_into_Redis_with_some_SMT]()
+
+
 ### Building Lab
 
 First Execute: 
@@ -27,15 +30,19 @@ First Execute:
 - `cd <Project root>/infrastructure`
 
 - `make pull` 
+
   - Pull Confluent based images
+
   - Pull Various Database images
 
 - `make build`
+
   - Build Images, primarily, the Kafka Connect image thats extended with the MySQL Source and REDIS Sink modules
 
 - `cd devlab/creSMT/kafka-custom-smt`
 
 - `mvn package clean`
+
   - Java compile/build the SMT functions/classes used by the Kafka Source and Sink connectors
 
 
@@ -46,19 +53,23 @@ First Execute:
 - `make run`
 
 - `make createtopics`
+
   - Create the jnl_acq Topic
 
 - `cd <Project root>/shadowtraffic`
 
 - `./run_1.sh`
+
   - Start the MySQL Record Generator
 
 - `cd <Project root>/devlab/creConnect`
 
 - `./jnl_acq_mysql_source-SMT.sh`
+
   - Create the Kafka Connect MySQL Source Connector
 
 - `./jnl_acq_redis_sink-SMT.sh`
+
   - Create the Kafka Connect REDIS Sink Connector
   
 ### Misc
