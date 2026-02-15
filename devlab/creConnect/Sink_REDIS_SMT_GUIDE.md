@@ -26,11 +26,9 @@ Kafka Topic: jnl_acq
 
 ## Prerequisites
 
-### 1. Add FilterByKafkaKey SMT to your JAR
+### 1. SMT Structure - JAR
 
-Update `pom.xml` dependencies and add `FilterByKafkaKey.java` to your project:
-
-```
+```bash
 src/main/java/com/example/kafka/connect/transforms/
 ├── FilterAndExtractKey.java  (existing)
     ├── FilterAndExtractKey.java 

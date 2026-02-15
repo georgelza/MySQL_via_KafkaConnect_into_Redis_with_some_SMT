@@ -12,8 +12,6 @@
 *
 *       GIT Repo        :   https://github.com/georgelza/MySQL_via_KafkaConnect_into_Redis_with_some_SMT.git
 *
-*       Blog            :
-*
 *       Custom SMT to format Redis keys with configurable patterns.
 * 
 *       Allows you to add prefixes, suffixes, or custom patterns to Redis keys.
