@@ -7,6 +7,10 @@ This directory contain the various scripts to deploy our MySQL Kafka Source conn
 
 - `jnl_acq_redis_sink-SMT.sh` as documented in `Sink_REDIS_SMT_GUIDE.md` for more regarding our Sink onnector and deployment.
 
+- Supplementary reading `supplementary/KEY_PATTERN_IMPLEMENTATION_GUIDE.md` and `supplementary/BEFORE_AFTER_COMPARISON.md` for background information regarding the key pattern functionality added on the REDIS Key structure created.
+
+- `deploy-az1-with-pattern.sh` and `deploy-az2-with-pattern.sh` are helper scripts to impliment the supplementary/Key Pattern capability.
+   
 Both these are dependant on the Java based [**Single Message Transform (SMT)**](https://docs.confluent.io/kafka-connectors/transforms/current/overview.html) packages as defined in `<Project root>/devlab/creSMT` directory.
 
 See `<Project root>/devlab/creSMT/README.md` for building our SMT function used by the `jnl_acq_mysql_source-SMT.sh` and `jnl_acq_redis_sink-SMT.sh` connector definitions/tasks.
@@ -48,6 +52,9 @@ See: [debezium-connector-mysql](https://debezium.io/docs/connectors/mysql/)
 It will:
 
 1. Source records from our MySQL tokenise.JNL_ACQ table using Kafka Connect Debezium MySQL Source Connector
-MySQL Source Connector.
-1. Assign a user specified value for the message key 
-2. All records are published onto our topic: `jnl_acq`
+2. Assign a user specified value for the message key 
+3. Publish records onto onto our topic: `jnl_acq`
+4. For the REDIS sink, Filter based on the key assigned
+5. Extract subset of columns
+6. Build a custom K/V store key
+7. Sink K/V set to REDIS

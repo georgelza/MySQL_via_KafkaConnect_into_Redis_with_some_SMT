@@ -47,8 +47,8 @@ import java.util.TimeZone;
 
 public class AddTimestamp<R extends ConnectRecord<R>> implements Transformation<R> {
     
-    private static final String TIMESTAMP_FIELD_CONFIG = "timestamp.field";
-    private static final String TIMESTAMP_FORMAT_CONFIG = "timestamp.format";
+    private static final String TIMESTAMP_FIELD_CONFIG    = "timestamp.field";
+    private static final String TIMESTAMP_FORMAT_CONFIG   = "timestamp.format";
     private static final String TIMESTAMP_TIMEZONE_CONFIG = "timestamp.timezone";
     
     private String timestampField;
@@ -58,7 +58,7 @@ public class AddTimestamp<R extends ConnectRecord<R>> implements Transformation<
     @Override
     public void configure(Map<String, ?> configs) {
         SimpleConfig config = new SimpleConfig(config(), configs);
-        timestampField = config.getString(TIMESTAMP_FIELD_CONFIG);
+        timestampField  = config.getString(TIMESTAMP_FIELD_CONFIG);
         timestampFormat = config.getString(TIMESTAMP_FORMAT_CONFIG);
         String timezone = config.getString(TIMESTAMP_TIMEZONE_CONFIG);
         

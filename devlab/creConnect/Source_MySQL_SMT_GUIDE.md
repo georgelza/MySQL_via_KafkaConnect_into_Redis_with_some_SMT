@@ -21,6 +21,7 @@ kafka-custom-smt/
     ├── FilterAndExtractKey.java 
     ├── FilterByKafkaKey.java      
     ├── ValueToJsonString.java    
+    ├── RedisKeyFormatter.java
     └── AddTimestamp.java          
 ```
 

@@ -36,7 +36,8 @@ src/main/java/com/example/kafka/connect/transforms/
     ├── FilterAndExtractKey.java 
     ├── ValueToJsonString.java    
     ├── AddTimestamp.java     
-    └── FilterByKafkaKey.java      (new)
+    ├── RedisKeyFormatter.java
+    └── FilterByKafkaKey.java 
 ```
 
 ### 2. Rebuild and Deploy
@@ -154,8 +155,11 @@ docker exec redis redis-cli -n 1 GET '5555555555555555'
 ```
 
 Expected:
-```
-{"acqJnlSeqNumber":12346,"tkcardNumber":"AZ2 discount"}
+```json
+{
+  "acqJnlSeqNumber":12346,
+  "tkcardNumber":"AZ2 discount"
+}
 ```
 
 ### 3. Monitor Data Flow
@@ -187,19 +191,19 @@ The connector uses this transform chain:
 ```
 
 1. **filterKey**: 
-   - Type: `FilterByKafkaKey`
+   - Type:  `FilterByKafkaKey`
    - Action: Drops messages where Kafka key ≠ specified value
    - Config: `key.value = "AZ1"`
 
 2. **selectFields**: 
-   - Type: `ReplaceField$Value`
+   - Type:  `ReplaceField$Value`
    - Action: Keeps only specified fields (plus cardNumber for next step)
    - Config: `include = "acqJnlSeqNumber,tkcardNumber,cardNumber"`
 
 3. **extractRedisKey**: 
-   - Type: `ValueToKey`
+   - Type:  `ValueToKey`
    - Action: Uses `cardNumber` field as the message key (becomes Redis key)
-   - Config: `fields = "cardNumber"`
+   - Config:`fields = "cardNumber"`
 
 ## Troubleshooting
 

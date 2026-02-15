@@ -1,9 +1,27 @@
 #!/bin/bash
 
-# This will extract the all records from the Source table and publish it onto the jnl_acq topic. 
-# It will additinall also add a key value based on the CONSTANT_KEY value passed in packaged as a JSON payload
-# i.e.:
-#   key:  {"key": "AZ1"}
+# //////////////////////////////////////////////////////////////////////////////////////////////////////
+#
+#       Project         :   Kafka Connect Source/Sink Connector SMT Function
+#
+#       File            :   jnl_acq_mysql_source-FULL.sh
+#
+#       Description     :   Kafka Connect Source/Sink Connector SMT Function
+#
+#       Created     	  :   Feb 2026
+#
+#       copyright       :   Copyright 2026, - G Leonard, georgelza@gmail.com
+#
+#       GIT Repo        :   https://github.com/georgelza/MySQL_via_KafkaConnect_into_Redis_with_some_SMT.git
+#
+#       Blog            :
+#
+#       This will extract the all records from the Source table and publish it onto the jnl_acq topic. 
+#       It will additinall also add a key value based on the CONSTANT_KEY value passed in packaged as a JSON payload
+#       i.e.:
+#       key:  {"key": "AZ1"}
+#
+#///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 set -e
 
@@ -41,44 +59,44 @@ sleep 3
 
 # Create connector with HoistField transform
 CONNECTOR_CONFIG=$(cat <<EOF
-{
-  "name": "${CONNECTOR_NAME}",
-  "config": {
-    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
-    "tasks.max": "1",
-    "database.hostname": "${MYSQL_HOST}",
-    "database.port": "${MYSQL_PORT}",
-    "database.user": "${MYSQL_USER}",
-    "database.password": "${MYSQL_PASSWORD}",
-    "database.server.id": "${MYSQL_HOST_ID}",
-    "database.server.name": "${MYSQL_HOST_NAME}",
-    "topic.prefix": "${MYSQL_HOST}",
-    "database.include.list": "${MYSQL_DATABASE}",
-    "table.include.list": "${MYSQL_DATABASE}.${TABLE_NAME}",
-    "include.schema.changes": "false",
-    "database.connectionTimeZone": "Africa/Johannesburg",
-    "schema.history.internal.kafka.bootstrap.servers": "${KAFKA_BOOTSTRAP_SERVERS}",
-    "schema.history.internal.kafka.topic": "${SCHEMA_HISTORY_TOPIC}",
-    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
-    "key.converter.schemas.enable": "false",
-    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-    "value.converter.schemas.enable": "false",
-    "transforms": "route,unwrap,addKeyField,extractKey,removeKeyField",
-    "transforms.route.type": "io.debezium.transforms.ByLogicalTableRouter",
-    "transforms.route.topic.regex": "${MYSQL_HOST}.${MYSQL_DATABASE}.${TABLE_NAME}",
-    "transforms.route.topic.replacement": "${TARGET_TOPIC}",
-    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
-    "transforms.unwrap.drop.tombstones": "false",
-    "transforms.unwrap.delete.handling.mode": "rewrite",
-    "transforms.addKeyField.type": "org.apache.kafka.connect.transforms.InsertField\$Value",
-    "transforms.addKeyField.static.field": "key",
-    "transforms.addKeyField.static.value": "${CONSTANT_KEY}",
-    "transforms.extractKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
-    "transforms.extractKey.fields": "key",
-    "transforms.removeKeyField.type": "org.apache.kafka.connect.transforms.ReplaceField\$Value",
-    "transforms.removeKeyField.exclude": "key"
+  {
+    "name": "${CONNECTOR_NAME}",
+    "config": {
+      "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+      "tasks.max": "1",
+      "database.hostname": "${MYSQL_HOST}",
+      "database.port": "${MYSQL_PORT}",
+      "database.user": "${MYSQL_USER}",
+      "database.password": "${MYSQL_PASSWORD}",
+      "database.server.id": "${MYSQL_HOST_ID}",
+      "database.server.name": "${MYSQL_HOST_NAME}",
+      "topic.prefix": "${MYSQL_HOST}",
+      "database.include.list": "${MYSQL_DATABASE}",
+      "table.include.list": "${MYSQL_DATABASE}.${TABLE_NAME}",
+      "include.schema.changes": "false",
+      "database.connectionTimeZone": "Africa/Johannesburg",
+      "schema.history.internal.kafka.bootstrap.servers": "${KAFKA_BOOTSTRAP_SERVERS}",
+      "schema.history.internal.kafka.topic": "${SCHEMA_HISTORY_TOPIC}",
+      "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+      "key.converter.schemas.enable": "false",
+      "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+      "value.converter.schemas.enable": "false",
+      "transforms": "route,unwrap,addKeyField,extractKey,removeKeyField",
+      "transforms.route.type": "io.debezium.transforms.ByLogicalTableRouter",
+      "transforms.route.topic.regex": "${MYSQL_HOST}.${MYSQL_DATABASE}.${TABLE_NAME}",
+      "transforms.route.topic.replacement": "${TARGET_TOPIC}",
+      "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+      "transforms.unwrap.drop.tombstones": "false",
+      "transforms.unwrap.delete.handling.mode": "rewrite",
+      "transforms.addKeyField.type": "org.apache.kafka.connect.transforms.InsertField\$Value",
+      "transforms.addKeyField.static.field": "key",
+      "transforms.addKeyField.static.value": "${CONSTANT_KEY}",
+      "transforms.extractKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
+      "transforms.extractKey.fields": "key",
+      "transforms.removeKeyField.type": "org.apache.kafka.connect.transforms.ReplaceField\$Value",
+      "transforms.removeKeyField.exclude": "key"
+    }
   }
-}
 EOF
 )
 
