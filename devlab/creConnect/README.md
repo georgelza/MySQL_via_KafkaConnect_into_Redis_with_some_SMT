@@ -9,6 +9,8 @@ This directory contain the various scripts to deploy our MySQL Kafka Source conn
 
 - Supplementary reading `supplementary/KEY_PATTERN_IMPLEMENTATION_GUIDE.md` and `supplementary/BEFORE_AFTER_COMPARISON.md` for background information regarding the key pattern functionality added on the REDIS Key structure created.
 
+- For Lab purposes to simulate two sources, without using two source database.tables see `supplementary/MULTIPLE_CONNECTORS_GUIDE.md`
+
 - `deploy-az1-with-pattern.sh` and `deploy-az2-with-pattern.sh` are helper scripts to impliment the supplementary/Key Pattern capability.
    
 Both these are dependant on the Java based [**Single Message Transform (SMT)**](https://docs.confluent.io/kafka-connectors/transforms/current/overview.html) packages as defined in `<Project root>/devlab/creSMT` directory.
