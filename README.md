@@ -1,89 +1,143 @@
-## From data generator, into MySQL, into Kafka via Source Connector (and a custom SMT), filtered and persisted into REDIS using another custom SMT/Kafka Sink Connector.
+## From ShadowTraffic, into MySQL, into Kafka using Source Connector (& a SMT), filtered, packaged & sinked into REDIS using Kafka Sink Connector (& another SMT)
 
-Welcome back to the Rabbit Hole.
+Welcome back to [The Rabbit Hole](https://medium.com/@georgelza/list/the-rabbit-hole-0df8e3155e33).
+
 
 
 ### Blog Overview
 
 So, as per the tittle, a little data flow.
 
-1. We start by first generating records using Shadowtraffic, insert the records into a MySQL datastore.
+1. We start by first generating records using [Shadowtraffic](https://shadowtraffic.io). 
 
-2. We then utilise Kafka Connect Source connector with a custom SMT consume the records from the MySQL datastore, filtering out specific records and publishing they, together with a user defined Key onto a topic.
+2. Insert the records created into a [MySQL](https://www.mysql.com) datastore.
 
-3. From here we use a Kafka Connect framework Sink connector, again with a SMT function filter our records package (specified fields) into a Key/Value record into a REDIS datastore.
+3. We then utilise Kafka Connect Source Connector with a custom SMT to consume the records from our [MySQL](https://www.mysql.com) datastore, filtering out specific records, after adding a custom [Message Key](https://www.confluent.io/learn/kafka-message-key/) (not based on a column) as we publish onto specified [Apache Kafka](https://kafka.apache.org) topic.
 
-The two Single Message Transforms (SMT's) Functions are Java based, full disclosure, Java is not my thing so abused Claude and Gemini a bit here. Hey we use the tools available.
+4. From here we use a [Kafka](https://kafka.apache.org) Connect Sink Connector, again with a custom SMT function to filter our records, package (specified columns) into a Key/Value JSON payload into a [REDIS](https://redis.io) datastore.
 
-<img src="diagrams/SuperLabv3.0.png" alt="Our Build" width="750" height="300">
 
+<img src="diagrams/SuperLabv3.0-Simplified.png" alt="Our Build" width="800" height="300">
+
+See: 
+
+- [What is Kafka Connect Framework - Core Components](https://developer.confluent.io/learn-more/podcasts/intro-to-kafka-connect-core-components-and-architecture-ft-robin-moffatt/)
+- [Kafka Connect Overview](https://kafka.apache.org/41/kafka-connect/overview/)
+- [Confluent Market Place: Kafka Source and Sink Connectors](https://www.confluent.io/hub/)
+
+The two [Single Message Transforms (SMT's)](https://docs.confluent.io/kafka-connectors/transforms/current/overview.html) functions are Java based, full disclosure, Java is not my thing so abused [Claude](https://claude.ai/new) and [Gemini](https://gemini.google.com/app) a bit here. Hey we use the tools available.
+
+See:
+- <Project root/README.md>,
+- <Project root/devlab/creConnect/README.md>
+
+for a more detailed description.
 
 GIT: [MySQL_via_KafkaConnect_into_Redis_with_some_SMT](https://github.com/georgelza/MySQL_via_KafkaConnect_into_Redis_with_some_SMT.git)
 
-BLOG: [MySQL_via_KafkaConnect_into_Redis_with_some_SMT]()
+BLOG: [From ShadowTraffic, into MySQL, into Kafka using Source Connector (& a SMT), filtered, packaged & sinked into REDIS using Kafka Sink Connector (& another SMT)]()
 
 
 ### Building Lab
 
 First Execute: 
 
-- `cd <Project root>/infrastructure`
+- cd <Project root>/infrastructure
 
-- `make pull` 
+- make pull
 
   - Pull Confluent based images
 
   - Pull Various Database images
 
-- `make build`
+- make build
 
-  - Build Images, primarily, the Kafka Connect image thats extended with the MySQL Source and REDIS Sink modules
+  - Build Images, primarily, the Kafka Connect image thats extended with the [MySQL](https://www.mysql.com) Source and [REDIS](https://redis.io) Sink modules
 
-- `cd devlab/creSMT/kafka-custom-smt`
+- cd devlab/creSMT/kafka-custom-smt
 
-- `mvn package clean`
+- mvn package clean
 
   - Java compile/build the SMT functions/classes used by the Kafka Source and Sink connectors
 
 
 ### Running Lab
 
-- `cd <Project root>/devlab`
+- cd <Project root>/devlab
 
-- `make run`
+- make run
 
-- `make createtopics`
+- make createtopics
 
   - Create the jnl_acq Topic
 
-- `cd <Project root>/shadowtraffic`
+- cd <Project root>/shadowtraffic
 
-- `./run_1.sh`
+- ./run_1.sh
 
   - Start the MySQL Record Generator
 
-- `cd <Project root>/devlab/creConnect`
+- cd <Project root>/devlab/creConnect
 
-- `./jnl_acq_mysql_source-SMT.sh`
+- ./jnl_acq_mysql_source-SMT.sh
 
   - Create the Kafka Connect MySQL Source Connector
 
-- `./jnl_acq_redis_sink-SMT.sh`
+- ./jnl_acq_redis_sink-SMT.sh
 
   - Create the Kafka Connect REDIS Sink Connector
   
+## Monitoring
+
+At this point you can monitor your Kafka topic for the inbound records using kcat, formarly kafkacat.
+
+### Kafka Topic
+
+``` bash
+# See the last 10 record Key's
+kcat -b localhost:9092 -t jnl_acq -C -f 'Key: %k\n' -c 10
+
+# See continious feed of record Key's
+kcat -b localhost:9092 -t jnl_acq -C -f 'Key: %k\n'
+
+# See raw message published onto jnl_acq topic
+kcat -b localhost:9092 -t jnl_acq -C -o end -f 'Key: %k | Timestamp: %T\nValue: %s\n\n'
+
+# See beautified, using jq message as published onto our jnl_acq topic
+kcat -b localhost:9092 -t jnl_acq -C -f 'Key: %k\n%s\n' -c 1 | tail -n +2 | jq .
+```
+
+### Redis DB store
+
+```bash
+# Enter Redis Container
+docker exec -it redis redis-cli -n 0
+
+# Enter below, this will then display ALL keys
+keys * 
+
+# Enter below, this will then display ALL keys starting with 074
+keys 074*
+```
+
+For my usage I installed kcat and [REDIS](https://redis.io) locally, giving me access to redis-cli. This also made running the purge.sh as per below easier.
+
+
 ### Misc
 
-Oh, b.t.w, if you see `<Project Root/devlab/redis `you will find a little `purge.sh` script that can be run using a cron job to manage the amount of records in the REDIS in memory store, this TTL... without using TTL.
 
+Oh, b.t.w, if you see `<Project Root/devlab/redis` you will find a little `purge.sh `script that can be run using a cron job to manage the amount of records in the [REDIS](https://redis.io) in memory store, this TTL… without using TTL.
 
 ## Summary
 
-This is for my side part of a larger "concept" that I'm playing with, but figured it would be useful for others.
+This, for my side is part of a larger “concept” that I’m playing with, but figured it would be useful for others.
 
-We generated some data, very fake... ;) insert that into MySQL, then create a Kakfa Connect Source connector to consume the data, but not all of, we had a filter function using a Single Message Transform function.
+<img src="diagrams/SuperLabv3.0.png" alt="Our Build" width="750" height="300">
 
-We then have a Kafka Connect Sink Connector, again filtering specific information, selecting a subset of columns and sinking that into a REDIS in memory store.
+
+We generated some data, very fake… ;) using ShadowTraffic utility by Michael Drogalis, insert that into [MySQL](https://www.mysql.com), then use a Kakfa Connect Source connector to consume the data using CDC, but not all of, we filter it and use a Single Message Transform function to modify it, slightly ;).
+
+We then have a Kafka Connect Sink Connector configured, again using a SMT to select/include specific records and only a subset of the columns and sinking the now compiled result set into a [REDIS](https://redis.io) in memory datastore as a Key/Value pair.
 
 Nifty, I think.
 
@@ -91,7 +145,9 @@ Nifty, I think.
 **THE END**
 
 
-Thanks for following. Till next time.
+And like that we’re done with our little trip down another Rabbit Hole...
+
+Thanks for following, till next time.
 
 
 ### The Rabbit Hole
