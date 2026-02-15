@@ -8,9 +8,9 @@
 #
 #   Key:   cardNumber value (e.g., "4111111111111111")
 #   Value: JSON string {
-#           "acqJnlSeqNumber":12345, 
-#           "tkcardNumber": "Special offer", 
-#           "createdAt": "2026-02-14T10:30:45.123Z
+#           "acqJnlSeqNumber": 12345, 
+#           "tkcardNumber":    "Special offer", 
+#           "createdAt":       "2026-02-14T10:30:45.123Z
 #       }
 #
 # The idea is to deploy 2 of these, one per required REDIS datastore, i.e. all MySQL records originating from AZ1, with key=AZ1 being send to the AZ1 REDIS KV Datastore.

@@ -102,7 +102,7 @@
                 },
 
                 // We using this "tkcardNumber" field to hold our "fake" tokenised CC number
-                // think of this as "tokenCardNumber"
+                // think of this as "tokenised Card Number / tkcardNumber"
                 // We generating 1 in a thousand atm as our subset of inbound records.
                 "tkcardNumber":{
                     "_gen": "weightedOneOf",
