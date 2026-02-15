@@ -12,9 +12,7 @@
 #       copyright       :   Copyright 2026, - G Leonard, georgelza@gmail.com
 #
 #       GIT Repo        :   https://github.com/georgelza/MySQL_via_KafkaConnect_into_Redis_with_some_SMT.git
-#
-#       Blog            :
-#
+##
 #       Deploy AZ2 Redis Sink with Namespace Pattern
 #       This script deploys the AZ2 connector with az2:card: prefix
 #

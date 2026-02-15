@@ -14,14 +14,12 @@
 #
 #       GIT Repo        :   https://github.com/georgelza/MySQL_via_KafkaConnect_into_Redis_with_some_SMT.git
 #
-#       Blog            :
+#       CUSTOM SMT Based Kafka MySQL Source Connector
 #
-#     CUSTOM SMT Based Kafka MySQL Source Connector
+#       - Filters: Only publishes if cardNumber AND tkcardNumber are populated
+#       - Key:     Plain string "AZ1" (not JSON, not Struct)
 #
-#     - Filters: Only publishes if cardNumber AND tkcardNumber are populated
-#     - Key:     Plain string "AZ1" (not JSON, not Struct)
-#
-#     The idea is 2 of these can be deployed, one per MySQL source, each inbound stream labelled by either AZ1 or AZ2 as original source.
+#       The idea is 2 of these can be deployed, one per MySQL source, each inbound stream labelled by either AZ1 or AZ2 as original source.
 #
 #///////////////////////////////////////////////////////////////////////////////////////////////////////
 

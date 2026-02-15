@@ -14,18 +14,16 @@
 #
 #       GIT Repo        :   https://github.com/georgelza/MySQL_via_KafkaConnect_into_Redis_with_some_SMT.git
 #
-#       Blog            :
-#
 #       CUSTOM SMT Based Kafka REDIS Sink Connector with KEY_PATTERN Support
 #
 #       Filters by Kafka key (AZ1 or AZ2), extracts specific fields, formats Redis key, stores in Redis
 #
 #       Redis Structure:
 #
-#           Key:   Formatted key (e.g., "az1:card:4111111111111111" or "card:4111111111111111")
+#           Key:   Formatted key (e.g., "az1:card:4111111111111111" or "card:4111111111111111" or "card:4111111111111111:v1")
 #           Value: JSON string {
 #                "acqJnlSeqNumber": 12345, 
-#                 "tkcardNumber":    "Special offer", 
+#                "tkcardNumber":    "Special offer", 
 #                "createdAt":       "2026-02-14T10:30:45.123Z
 #            }
 #
