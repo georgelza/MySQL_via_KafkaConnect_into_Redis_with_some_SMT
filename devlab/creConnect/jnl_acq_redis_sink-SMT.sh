@@ -20,10 +20,10 @@
 #
 #       Redis Structure:
 #
-#           Key:   Formatted key (e.g., "az1:card:4111111111111111" or "card:4111111111111111" or "card:4111111111111111:v1")
+#           Key:   Formatted key (e.g., "az1:tkcard:4111111111111111" or "tkcard:4111111111111111" or "tkcard:4111111111111111:v1")
 #           Value: JSON string {
 #                "acqJnlSeqNumber": 12345, 
-#                "tkcardNumber":    "Special offer", 
+#                "cardNumber":      "5211111111111111", 
 #                "createdAt":       "2026-02-14T10:30:45.123Z
 #            }
 #
@@ -36,8 +36,8 @@
 #       Redis Key Pattern
 #       Examples:
 #           "${key}"              -> "4111111111111111" (no change, default)
-#           "card:${key}"         -> "card:4111111111111111"
-#           "az1:card:${key}"     -> "az1:card:4111111111111111"
+#           "tcard:${key}"        -> "tkcard:4111111111111111"
+#           "az1:tkcard:${key}"   -> "az1:tkcard:4111111111111111"
 #           "${key}:v1"           -> "4111111111111111:v1"
 #
 #///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,13 +59,13 @@ REDIS_DATABASE="${REDIS_DATABASE:-0}"
 REDIS_PASSWORD="${REDIS_PASSWORD:-}"
 
 # Field Selection
-REDIS_KEY_FIELD="${REDIS_KEY_FIELD:-cardNumber}"
+REDIS_KEY_FIELD="${REDIS_KEY_FIELD:-tkcardNumber}"
 # THE PAYLOAD
 # Comma-separated list of fields to include in Redis value
-REDIS_VALUE_FIELDS="${REDIS_VALUE_FIELDS:-acqJnlSeqNumber,tkcardNumber}"
+REDIS_VALUE_FIELDS="${REDIS_VALUE_FIELDS:-acqJnlSeqNumber,cardNumber}"
 
-REDIS_KEY_PATTERN="${REDIS_KEY_PATTERN:-card:\${key}}"
-#export REDIS_KEY_PATTERN="az1:card:\${key}"
+REDIS_KEY_PATTERN="${REDIS_KEY_PATTERN:-tkcard:\${key}}"
+#export REDIS_KEY_PATTERN="az1:tkcard:\${key}"
 
 echo "=================================================="
 echo "REDIS SINK CONNECTOR - ${KAFKA_KEY_FILTER}"
@@ -105,7 +105,7 @@ CONNECTOR_CONFIG=$(cat <<EOF
         "key.converter": "org.apache.kafka.connect.storage.StringConverter",
         "value.converter": "org.apache.kafka.connect.json.JsonConverter",
         "value.converter.schemas.enable": "false",
-        "transforms": "filterKey,addTimestamp,selectFields,extractRedisKey,flattenKey,formatRedisKey,removeCardNumber,valueToJsonString",
+        "transforms": "filterKey,addTimestamp,selectFields,extractRedisKey,flattenKey,formatRedisKey,removeTkCardNumber,valueToJsonString",
         "transforms.filterKey.type": "com.token.kafka.connect.transforms.FilterByKafkaKey",
         "transforms.filterKey.key.value": "${KAFKA_KEY_FILTER}",
         "transforms.addTimestamp.type": "com.token.kafka.connect.transforms.AddTimestamp",
@@ -121,8 +121,8 @@ CONNECTOR_CONFIG=$(cat <<EOF
         "transforms.formatRedisKey.type": "com.token.kafka.connect.transforms.RedisKeyFormatter",
         "transforms.formatRedisKey.key.pattern": "${REDIS_KEY_PATTERN}",
         "transforms.formatRedisKey.key.pattern.null.handling": "pass",
-        "transforms.removeCardNumber.type": "org.apache.kafka.connect.transforms.ReplaceField\$Value",
-        "transforms.removeCardNumber.exclude": "${REDIS_KEY_FIELD}",
+        "transforms.removeTkCardNumber.type": "org.apache.kafka.connect.transforms.ReplaceField\$Value",
+        "transforms.removeTkCardNumber.exclude": "${REDIS_KEY_FIELD}",
         "transforms.valueToJsonString.type": "com.token.kafka.connect.transforms.ValueToJsonString"
         }
     }
@@ -175,7 +175,7 @@ for i in {1..6}; do
         
         echo "Example Redis entry:"
         echo "  redis> GET \"${EXAMPLE_KEY}\""
-        echo "  {\"acqJnlSeqNumber\":12345,\"tkcardNumber\":\"10% off\",\"createdAt\":\"2026-02-14T10:30:45.123Z\"}"
+        echo "  {\"acqJnlSeqNumber\":12345,\"cardNumber\":\"10% off\",\"createdAt\":\"2026-02-14T10:30:45.123Z\"}"
         echo ""
         echo "Verify in Redis:"
         echo "  # List all keys"
@@ -188,7 +188,7 @@ for i in {1..6}; do
         echo "  docker exec redis redis-cli -n ${REDIS_DATABASE} DBSIZE"
         echo ""
         echo "  # Search by pattern"
-        echo "  docker exec redis redis-cli -n ${REDIS_DATABASE} KEYS 'az1:card:*'"
+        echo "  docker exec redis redis-cli -n ${REDIS_DATABASE} KEYS 'az1:tkcard:*'"
         echo ""
         echo "Test by inserting into MySQL:"
         echo "  docker exec mysql mysql -u root -pdbpassword tokenise -e \\"

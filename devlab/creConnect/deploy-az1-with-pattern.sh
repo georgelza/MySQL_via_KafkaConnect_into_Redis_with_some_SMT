@@ -32,11 +32,12 @@ export REDIS_DATABASE="0"  # AZ1 uses database 0
 export REDIS_PASSWORD=""
 
 # Field Selection
-export REDIS_KEY_FIELD="cardNumber"
-export REDIS_VALUE_FIELDS="acqJnlSeqNumber,tkcardNumber"
+export REDIS_KEY_FIELD="tkcardNumber"
+export REDIS_VALUE_FIELDS="acqJnlSeqNumber,cardNumber"
 
 # 🆕 KEY PATTERN - Add az1:card: prefix
-export REDIS_KEY_PATTERN="az1:card:\${key}"
+# export REDIS_KEY_PATTERN="az1:card:\${key}"
+export REDIS_KEY_PATTERN="card:\${key}"
 
 echo "=================================================="
 echo "Deploying AZ* Redis Sink Connector"

@@ -32,10 +32,11 @@ export REDIS_DATABASE="1"  # AZ2 uses database 1
 export REDIS_PASSWORD=""
 
 # Field Selection
-export REDIS_KEY_FIELD="cardNumber"
-export REDIS_VALUE_FIELDS="acqJnlSeqNumber,tkcardNumber"
+export REDIS_KEY_FIELD="tkcardNumber"
+export REDIS_VALUE_FIELDS="acqJnlSeqNumber,cardNumber"
 
 # 🆕 KEY PATTERN - Add az2:card: prefix
+# export REDIS_KEY_PATTERN="az2:card:\${key}"
 export REDIS_KEY_PATTERN="card:\${key}"
 
 echo "=================================================="
